@@ -4,6 +4,30 @@ var Promise = require("bluebird"),
     util = require("util"),
     redis = require("redis");
 
+function serialize(value) {
+  if (value === null) {
+    return "null";
+  }
+
+  if (value === undefined) {
+    return "undefined";
+  }
+
+  return JSON.stringify(value);
+}
+
+function deserialize(value) {
+  if (value === "null") {
+    return null;
+  }
+
+  if (value === "undefined") {
+    return undefined;
+  }
+
+  return JSON.parse(value);
+}
+
 function RedisCache(options) {
   EventEmitter.call(this);
 
@@ -19,31 +43,21 @@ function RedisCache(options) {
   this.client.delAsync = Promise.promisify(this.client.del);
   this.client.keysAsync = Promise.promisify(this.client.keys);
   this.get = function (key) {
-    return this.client.getAsync(key).then(function (res) {
-      if (res !== null && res !== undefined) {
-        return JSON.parse(res);
-      }
-
-      return res;
-    });
+    return this.client.getAsync(key).then(deserialize);
   };
   this.peek = function (key) {
     return this.get(key);
   };
   this.has = function (key) {
-    return this.get(key).then(function (value) {
+    return this.client.getAsync(key).then(function (value) {
       return value !== null;
     });
   };
   this.set = function (key, value, ttl) {
-    if (value === null || value === undefined) {
-      return Promise.resolve();
-    }
-
     if (ttl > 0) {
-      return this.client.setexAsync(key, Math.round(ttl / 1000), JSON.stringify(value));
+      return this.client.setexAsync(key, Math.round(ttl / 1000), serialize(value));
     } else {
-      return this.client.setAsync(key, JSON.stringify(value));
+      return this.client.setAsync(key, serialize(value));
     }
   };
   this.del = function (key) {

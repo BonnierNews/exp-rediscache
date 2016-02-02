@@ -92,6 +92,36 @@ describe("RedisCache", function () {
     }, done);
   });
 
+  it("should return null if value in redis is \"null\"", function (done) {
+    var options = {
+      cache: {
+        key: {
+          value: "null"
+        }
+      }
+    };
+    var target = new RedisCache(options);
+    target.get("key").then(function (value) {
+      assert(value === null);
+      done();
+    }, done);
+  });
+
+  it("should return undefined if value in redis is \"undefined\"", function (done) {
+    var options = {
+      cache: {
+        key: {
+          value: "undefined"
+        }
+      }
+    };
+    var target = new RedisCache(options);
+    target.get("key").then(function (value) {
+      assert(value === undefined);
+      done();
+    }, done);
+  });
+
   it("should emit client errors", function (done) {
     var target = new RedisCache();
     target.on("error", function (err) {
@@ -162,6 +192,36 @@ describe("RedisCache", function () {
       cache: {
         key: {
           value: "\"value\""
+        }
+      }
+    };
+    var target = new RedisCache(options);
+    target.has("key").then(function (value) {
+      value.should.equal(true);
+      done();
+    }, done);
+  });
+
+  it("should have the key if it is set to \"null\"", function (done) {
+    var options = {
+      cache: {
+        key: {
+          value: "null"
+        }
+      }
+    };
+    var target = new RedisCache(options);
+    target.has("key").then(function (value) {
+      value.should.equal(true);
+      done();
+    }, done);
+  });
+
+  it("should have the key if it is set to \"undefined\"", function (done) {
+    var options = {
+      cache: {
+        key: {
+          value: "undefined"
         }
       }
     };
