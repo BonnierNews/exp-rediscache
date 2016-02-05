@@ -255,10 +255,26 @@ describe("RedisCache", function () {
     }, done);
   });
 
+  it("should not set the value in redis if ttl is less than 1", function (done) {
+    var target = new RedisCache();
+    target.set("key", "value", 0).then(function () {
+      assert(target.client.cache.key === undefined);
+      done();
+    }, done);
+  });
+
   it("should set the value in redis permanently if without ttl", function (done) {
     var target = new RedisCache();
     target.set("key", "value").then(function () {
       assert(target.client.cache.key.ttl === null);
+      done();
+    }, done);
+  });
+
+  it("should set the value in redis with default ttl if without ttl", function (done) {
+    var target = new RedisCache({ maxAge: 1000 });
+    target.set("key", "value").then(function () {
+      target.client.cache.key.ttl.should.equal(1);
       done();
     }, done);
   });

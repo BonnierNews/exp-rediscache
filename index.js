@@ -53,9 +53,13 @@ function RedisCache(options) {
       return value !== null;
     });
   };
-  this.set = function (key, value, ttl) {
-    if (ttl > 0) {
-      return this.client.setexAsync(key, Math.round(ttl / 1000), serialize(value));
+  this.set = function (key, value, maxAge) {
+    if (maxAge <= 0) {
+      return Promise.resolve();
+    } else if (maxAge > 0) {
+      return this.client.setexAsync(key, Math.round(maxAge / 1000), serialize(value));
+    } else if (options && options.maxAge !== undefined){
+      return this.set(key, value, options.maxAge);
     } else {
       return this.client.setAsync(key, serialize(value));
     }
