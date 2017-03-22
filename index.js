@@ -4,6 +4,8 @@ var Promise = require("bluebird"),
     util = require("util"),
     redis = require("redis");
 
+var DEFAULT_RETRY_MS = 2000;
+
 function serialize(value) {
   if (value === null) {
     return "null";
@@ -29,9 +31,11 @@ function deserialize(value) {
 }
 
 function RedisCache(options) {
+  options = options || {};
   EventEmitter.call(this);
 
   var self = this;
+  options.retry_strategy = options.retry_strategy || function () { return DEFAULT_RETRY_MS; };
   this.client = redis.createClient(options);
   this.client.on("error", function (err) {
     self.emit("error", err);

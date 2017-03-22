@@ -71,10 +71,21 @@ describe("RedisCache", function () {
   it("should pass options to redis client", function () {
     var options = {
       host: "127.0.0.1",
-      port: 6379
+      port: 6379,
+      retry_strategy: function() {}
     };
     var target = new RedisCache(options);
     target.client.options.should.eql(options);
+  });
+
+  it("should add retry_stategy option if none specified", function () {
+    var options = {
+      host: "127.0.0.1",
+      port: 6379
+    };
+    var target = new RedisCache(options);
+    target.client.options.should.have.property("retry_strategy");
+    target.client.options.retry_strategy().should.eql(2000);
   });
 
   it("should get the value from redis as json", function (done) {
