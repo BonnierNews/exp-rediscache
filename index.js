@@ -30,6 +30,10 @@ function deserialize(value) {
   return JSON.parse(value);
 }
 
+function deserializeAll(values) {
+  return values.map(deserialize);
+}
+
 function RedisCache(options) {
   options = options || {};
   EventEmitter.call(this);
@@ -42,12 +46,16 @@ function RedisCache(options) {
   });
 
   this.client.getAsync = Promise.promisify(this.client.get);
+  this.client.getAllAsync = Promise.promisify(this.client.mget);
   this.client.setexAsync = Promise.promisify(this.client.setex);
   this.client.setAsync = Promise.promisify(this.client.set);
   this.client.delAsync = Promise.promisify(this.client.del);
   this.client.keysAsync = Promise.promisify(this.client.keys);
   this.get = function (key) {
     return this.client.getAsync(key).then(deserialize);
+  };
+  this.getAll = function (keys) {
+      return this.client.getAllAsync(keys).then(deserializeAll);
   };
   this.peek = function (key) {
     return this.get(key);
