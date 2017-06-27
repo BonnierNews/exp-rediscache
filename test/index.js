@@ -215,7 +215,7 @@ describe("RedisCache", function () {
       };
       var target = new RedisCache(options);
       target.getAll(["key1", "key2", "key3"]).then(function (values) {
-          values.should.eql(["value1", null, "value3"]);
+          values.should.eql(["value1", null, "value3"] );
           done();
       }, done);
   });

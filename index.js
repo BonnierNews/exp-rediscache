@@ -40,10 +40,12 @@ function RedisCache(options) {
 
   var self = this;
   options.retry_strategy = options.retry_strategy || function () { return DEFAULT_RETRY_MS; };
+  this.poolResolveTimeMs = (options && options.poolTime) || 0;
   this.client = redis.createClient(options);
   this.client.on("error", function (err) {
     self.emit("error", err);
   });
+  this.getPool = [];
 
   this.client.getAsync = Promise.promisify(this.client.get);
   this.client.getAllAsync = Promise.promisify(this.client.mget);
@@ -51,9 +53,44 @@ function RedisCache(options) {
   this.client.setAsync = Promise.promisify(this.client.set);
   this.client.delAsync = Promise.promisify(this.client.del);
   this.client.keysAsync = Promise.promisify(this.client.keys);
+
   this.get = function (key) {
-    return this.client.getAsync(key).then(deserialize);
+    return self.addGetToPool(key);
   };
+
+  this.addGetToPool = function (key) {
+    return new Promise(function(resolve, reject){
+      const getVO = {
+        key: key,
+        resolve: resolve,
+        reject: reject
+      };
+      self.getPool.push(getVO);
+      clearTimeout(self.resolveGetPoolTimer);
+      self.resolveGetPoolTimer = setTimeout(self.resolveGetPool, self.poolResolveTimeMs);
+    });
+  };
+
+  this.resolveGetPool = function () {
+    var localGetPool = self.getPool.slice(0);
+    self.getPool = [];
+    var keys = localGetPool.map(function (getVO) {
+      return getVO.key;
+    });
+    self.getAll(keys)
+      .then(function (serializedItems) {
+        localGetPool.forEach(function (getVO, index) {
+          getVO.resolve(serializedItems[index]);
+        });
+      })
+      .catch(function (err) {
+        localGetPool.forEach(function (getVO) {
+          getVO.reject(err);
+        });
+      });
+
+  };
+
   this.getAll = function (keys) {
       return this.client.getAllAsync(keys).then(deserializeAll);
   };
