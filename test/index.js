@@ -19,6 +19,21 @@ var redisStub = {
           callback(null, null);
         }
       },
+      mget: function (keys, callback) {
+          if (keys === "error") {
+              return callback(new Error("redis error"));
+          }
+          const results = [];
+          keys.forEach(function(key){
+              if (cache.hasOwnProperty(key)) {
+                  results.push(cache[key].value);
+              }
+              else {
+                  results.push(null);
+              }
+          });
+          callback(null, results);
+      },
       setex: function (key, ttl, value, callback) {
         if (key === "error") {
           return callback(new Error("redis error"));
@@ -131,6 +146,78 @@ describe("RedisCache", function () {
       assert(value === undefined);
       done();
     }, done);
+  });
+
+  it("should get multiple values from redis as json", function (done) {
+      var options = {
+          cache: {
+              key1: {
+                  value: "\"value1\""
+              },
+              key2: {
+                  value: "\"value2\""
+              }
+          }
+      };
+      var target = new RedisCache(options);
+      target.getAll(["key1", "key2"]).then(function (values) {
+          values.should.eql(["value1", "value2"]);
+          done();
+      }, done);
+  });
+
+  it("should return multiple nulls if values in redis is \"null\"", function (done) {
+      var options = {
+          cache: {
+              key1: {
+                  value: "null"
+              },
+              key2: {
+                  value: "null"
+              }
+          }
+      };
+      var target = new RedisCache(options);
+      target.getAll(["key1", "key2"]).then(function (values) {
+          values.should.eql([null, null]);
+          done();
+      }, done);
+  });
+
+  it("should return multiple undefined if values in redis are \"undefined\"", function (done) {
+      var options = {
+          cache: {
+              key1: {
+                  value: "undefined"
+              },
+              key2: {
+                  value: "undefined"
+              }
+          }
+      };
+      var target = new RedisCache(options);
+      target.getAll(["key1", "key2"]).then(function (values) {
+          values.should.eql([undefined, undefined]);
+          done();
+      }, done);
+  });
+
+  it("should return null if a key is missing in redis", function (done) {
+      var options = {
+          cache: {
+              key1: {
+                  value: "\"value1\""
+              },
+              key3: {
+                  value: "\"value3\""
+              }
+          }
+      };
+      var target = new RedisCache(options);
+      target.getAll(["key1", "key2", "key3"]).then(function (values) {
+          values.should.eql(["value1", null, "value3"]);
+          done();
+      }, done);
   });
 
   it("should emit client errors", function (done) {
