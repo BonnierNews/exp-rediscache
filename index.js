@@ -1,10 +1,9 @@
 "use strict";
-var Promise = require("bluebird"),
-    EventEmitter = require("events"),
-    util = require("util"),
-    redis = require("redis");
-
 var DEFAULT_RETRY_MS = 2000;
+var Promise = require("bluebird"),
+  EventEmitter = require("events"),
+  util = require("util"),
+  redis = require("redis");
 
 function serialize(value) {
   if (value === null) {
@@ -58,9 +57,10 @@ function RedisCache(options) {
     });
   };
   this.set = function (key, value, maxAge) {
-    if (maxAge <= 0) {
+    var hasTtl = (typeof maxAge === "number");
+    if (hasTtl && maxAge <= 0) {
       return Promise.resolve();
-    } else if (maxAge > 0) {
+    } else if (hasTtl && maxAge > 0) {
       return this.client.setexAsync(key, Math.round(maxAge / 1000), serialize(value));
     } else if (options && options.maxAge !== undefined){
       return this.set(key, value, options.maxAge);
