@@ -39,7 +39,7 @@ function RedisCache(options) {
 
   var self = this;
   options.retry_strategy = options.retry_strategy || function () { return DEFAULT_RETRY_MS; };
-  this.poolResolveTimeMs = (options && options.poolTime) || 20;
+  this.poolResolveTimeMs = (options && options.poolTime) || 1;
   this.resolveGetPoolTimer = false;
   this.getPool = [];
   this.client = redis.createClient(options);
@@ -74,7 +74,7 @@ function RedisCache(options) {
   };
 
   this.resolveGetPool = function () {
-    console.log("Resolving get Pool with size", self.getPool && self.getPool.length);
+    console.log("Resolving get Pool with size", self.getPool.length);
     self.resolveGetPoolTimer = false;
     var localGetPool = self.getPool.slice(0);
     self.getPool = [];
