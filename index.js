@@ -66,12 +66,15 @@ function RedisCache(options) {
         reject: reject
       };
       self.getPool.push(getVO);
-      clearTimeout(self.resolveGetPoolTimer);
-      self.resolveGetPoolTimer = setTimeout(self.resolveGetPool, self.poolResolveTimeMs);
+      if(!self.resolveGetPoolTimer){
+       // clearTimeout(self.resolveGetPoolTimer);
+        self.resolveGetPoolTimer = setTimeout(self.resolveGetPool, self.poolResolveTimeMs);
+      }
     });
   };
 
   this.resolveGetPool = function () {
+    self.resolveGetPoolTimer = false;
     var localGetPool = self.getPool.slice(0);
     self.getPool = [];
     var keys = localGetPool.map(function (getVO) {
