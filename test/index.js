@@ -19,6 +19,21 @@ var redisStub = {
           callback(null, null);
         }
       },
+      mget: function (keys, callback) {
+        if (keys === "error") {
+          return callback(new Error("redis error"));
+        }
+        const results = [];
+        keys.forEach(function(key){
+          if (cache.hasOwnProperty(key)) {
+            results.push(cache[key].value);
+          }
+          else {
+            results.push(null);
+          }
+        });
+        callback(null, results);
+      },
       setex: function (key, ttl, value, callback) {
         if (key === "error") {
           return callback(new Error("redis error"));
