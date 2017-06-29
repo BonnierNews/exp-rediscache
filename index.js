@@ -77,7 +77,6 @@ function RedisCache(options) {
   };
 
   this.resolveGetPool = function () {
-    console.log("Resolving get Pool with size", self.getPool.length);
     self.resolveGetPoolTimer = false;
     var localGetPool = self.getPool.slice(0);
     self.getPool = [];
