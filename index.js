@@ -39,7 +39,7 @@ function RedisCache(options) {
 
   var self = this;
   options.retry_strategy = options.retry_strategy || function () { return DEFAULT_RETRY_MS; };
-  this.poolResolveTimeMs = (options && options.poolTime) || 1;
+  this.poolResolveTimeMs = options.poolTime;
   this.resolveGetPoolTimer = false;
   this.getPool = [];
   this.client = redis.createClient(options);
@@ -55,7 +55,11 @@ function RedisCache(options) {
   this.client.keysAsync = Promise.promisify(this.client.keys);
 
   this.get = function (key) {
-    return self.addGetToPool(key);
+    if(this.poolResolveTimeMs && this.poolResolveTimeMs > 0){
+      return this.addGetToPool(key);
+    } else {
+      return this.client.getAsync(key).then(deserialize);
+    }
   };
 
   this.addGetToPool = function (key) {
@@ -67,7 +71,6 @@ function RedisCache(options) {
       };
       self.getPool.push(getVO);
       if(!self.resolveGetPoolTimer) {
-        //clearTimeout(self.resolveGetPoolTimer);
         self.resolveGetPoolTimer = setTimeout(self.resolveGetPool, self.poolResolveTimeMs);
       }
     });
