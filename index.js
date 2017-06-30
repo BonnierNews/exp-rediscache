@@ -71,7 +71,12 @@ function RedisCache(options) {
       };
       self.getPool.push(getVO);
       if(!self.resolveGetPoolTimer) {
-        self.resolveGetPoolTimer = setTimeout(self.resolveGetPool, self.poolResolveTimeMs);
+        if(self.poolResolveTimeMs === 1){
+          self.resolveGetPoolTimer = true;
+          setImmediate(self.resolveGetPool);
+        } else {
+          self.resolveGetPoolTimer = setTimeout(self.resolveGetPool, self.poolResolveTimeMs);
+        }
       }
     });
   };
