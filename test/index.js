@@ -133,7 +133,8 @@ describe("RedisCache", function () {
     }, done);
   });
 
-  it("should return undefined if value in redis is \"undefined\"", function (done) {
+  // undefined means "not found" in contract with exp-asynccache so we cannot return it.
+  it("should return \"undefined\" if value in redis is \"undefined\"", function (done) {
     var options = {
       cache: {
         key: {
@@ -143,7 +144,7 @@ describe("RedisCache", function () {
     };
     var target = new RedisCache(options);
     target.get("key").then(function (value) {
-      assert(value === undefined);
+      assert(value === "undefined");
       done();
     }, done);
   });
@@ -262,6 +263,14 @@ describe("RedisCache", function () {
     var target = new RedisCache();
     target.has("key").then(function (value) {
       value.should.equal(false);
+      done();
+    }, done);
+  });
+
+  it("should return undefined if key is missing", function (done) {
+    var target = new RedisCache();
+    target.get("key").then(function (value) {
+      assert(value === undefined);
       done();
     }, done);
   });

@@ -18,12 +18,15 @@ function serialize(value) {
 }
 
 function deserialize(value) {
-  if (value === "null") {
-    return null;
+
+  // Contract with exp-asynccache requires us to return undefined for missing keys
+  // Redis client returns null for missing keys
+  if (value === null) {
+    return undefined;
   }
 
   if (value === "undefined") {
-    return undefined;
+    return "undefined";
   }
 
   return JSON.parse(value);
@@ -55,7 +58,7 @@ function RedisCache(options) {
   this.client.keysAsync = Promise.promisify(this.client.keys);
 
   this.get = function (key) {
-    if(this.poolResolveTimeMs && this.poolResolveTimeMs > 0){
+    if(this.poolResolveTimeMs && this.poolResolveTimeMs > 0) {
       return this.addGetToPool(key);
     } else {
       return this.client.getAsync(key).then(deserialize);
