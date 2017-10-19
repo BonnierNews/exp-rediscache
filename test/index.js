@@ -115,7 +115,7 @@ describe("RedisCache", function () {
     target.get("key").then(function (value) {
       value.should.equal("value");
       done();
-    }, done);
+    });
   });
 
   it("should return null if value in redis is \"null\"", function (done) {
@@ -130,10 +130,11 @@ describe("RedisCache", function () {
     target.get("key").then(function (value) {
       assert(value === null);
       done();
-    }, done);
+    });
   });
 
-  it("should return undefined if value in redis is \"undefined\"", function (done) {
+  // undefined means "not found" in contract with exp-asynccache so we cannot return it.
+  it("should return \"undefined\" if value in redis is \"undefined\"", function (done) {
     var options = {
       cache: {
         key: {
@@ -143,9 +144,9 @@ describe("RedisCache", function () {
     };
     var target = new RedisCache(options);
     target.get("key").then(function (value) {
-      assert(value === undefined);
+      assert(value === "undefined");
       done();
-    }, done);
+    });
   });
 
   it("should emit client errors", function (done) {
@@ -171,8 +172,8 @@ describe("RedisCache", function () {
       target.has("key").then(function (value) {
         value.should.equal(false);
         done();
-      }, done);
-    }, done);
+      });
+    });
   });
 
   it("should delete all keys from redis when resetting", function (done) {
@@ -193,9 +194,9 @@ describe("RedisCache", function () {
         target.has("key2").then(function (value) {
           value.should.equal(false);
           done();
-        }, done);
-      }, done);
-    }, done);
+        });
+      });
+    });
   });
 
   it("should peek the value from redis as json", function (done) {
@@ -210,7 +211,7 @@ describe("RedisCache", function () {
     target.peek("key").then(function (value) {
       value.should.equal("value");
       done();
-    }, done);
+    });
   });
 
   it("should have the key if it is set", function (done) {
@@ -225,7 +226,7 @@ describe("RedisCache", function () {
     target.has("key").then(function (value) {
       value.should.equal(true);
       done();
-    }, done);
+    });
   });
 
   it("should have the key if it is set to \"null\"", function (done) {
@@ -240,7 +241,7 @@ describe("RedisCache", function () {
     target.has("key").then(function (value) {
       value.should.equal(true);
       done();
-    }, done);
+    });
   });
 
   it("should have the key if it is set to \"undefined\"", function (done) {
@@ -255,7 +256,7 @@ describe("RedisCache", function () {
     target.has("key").then(function (value) {
       value.should.equal(true);
       done();
-    }, done);
+    });
   });
 
   it("should not have the key if it is missing", function (done) {
@@ -263,7 +264,15 @@ describe("RedisCache", function () {
     target.has("key").then(function (value) {
       value.should.equal(false);
       done();
-    }, done);
+    });
+  });
+
+  it("should return undefined if key is missing", function (done) {
+    var target = new RedisCache();
+    target.get("key").then(function (value) {
+      assert(value === undefined);
+      done();
+    });
   });
 
   it("should reject the promise on get error from redis", function (done) {
@@ -278,7 +287,7 @@ describe("RedisCache", function () {
     target.set("key", "value", 1500).then(function () {
       target.client.cache.key.ttl.should.equal(2);
       done();
-    }, done);
+    });
   });
 
   it("should not set the value in redis if ttl is less than 1", function (done) {
@@ -286,7 +295,7 @@ describe("RedisCache", function () {
     target.set("key", "value", 0).then(function () {
       assert(target.client.cache.key === undefined);
       done();
-    }, done);
+    });
   });
 
   it("should set the value in redis permanently if without ttl", function (done) {
@@ -294,7 +303,7 @@ describe("RedisCache", function () {
     target.set("key", "value").then(function () {
       assert(target.client.cache.key.ttl === null);
       done();
-    }, done);
+    });
   });
 
   it("should set the value in redis with default ttl if without ttl", function (done) {
@@ -302,7 +311,7 @@ describe("RedisCache", function () {
     target.set("key", "value").then(function () {
       target.client.cache.key.ttl.should.equal(1);
       done();
-    }, done);
+    });
   });
 
   it("should set the value in redis as json", function (done) {
@@ -310,7 +319,7 @@ describe("RedisCache", function () {
     target.set("key", { field: "value" }, 1500).then(function () {
       target.client.cache.key.value.should.equal("{\"field\":\"value\"}");
       done();
-    }, done);
+    });
   });
 
   it("should reject the promise on set error from redis", function (done) {
