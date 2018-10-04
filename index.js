@@ -134,7 +134,11 @@ function RedisCache(options) {
   this.reset = function () {
     return this.client.keysAsync("*").then(function (keys) {
       return Promise.map(keys, function (key) {
-        return self.del(key);
+        if (options.prefix) {
+          if (key.indexOf(options.prefix) !== -1) return self.del(key.substr(options.prefix.length));
+        } else {
+          return self.del(key);
+        }
       });
     });
   };
