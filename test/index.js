@@ -55,7 +55,7 @@ var redisStub = {
         callback(null, null);
       },
       del: function (key, callback) {
-        delete cache[key];
+        delete cache[options.prefix ? options.prefix + key : key];
         callback();
       },
       keys: function (filter, callback) {
@@ -192,6 +192,30 @@ describe("RedisCache", function () {
       target.has("key").then(function (value) {
         value.should.equal(false);
         target.has("key2").then(function (value) {
+          value.should.equal(false);
+          done();
+        });
+      });
+    });
+  });
+
+  it("should delete all keys from redis when resetting a prefixed index", function (done) {
+    var options = {
+      prefix: "test-prefix:",
+      cache: {
+        "test-prefix:key": {
+          value: "\"value\""
+        },
+        "test-prefix:key2": {
+          value: "\"value\""
+        }
+      }
+    };
+    var target = new RedisCache(options);
+    target.reset().then(function () {
+      target.has("test-prefix:key").then(function (value) {
+        value.should.equal(false);
+        target.has("test-prefix:key2").then(function (value) {
           value.should.equal(false);
           done();
         });
