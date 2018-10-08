@@ -135,7 +135,7 @@ function RedisCache(options) {
     return this.client.keysAsync("*").then(function (keys) {
       return Promise.map(keys, function (key) {
         if (options.prefix) {
-          if (key.indexOf(options.prefix) !== -1) return self.del(key.substr(options.prefix.length));
+          if (key.indexOf(options.prefix) === 0) return self.del(key.substr(options.prefix.length));
         } else {
           return self.del(key);
         }
