@@ -325,7 +325,6 @@ describe("RedisCache", function () {
   it("should return an error if maxAge values cannot be parsed as numbers", function (done) {
     try {
     var target = new RedisCache({ maxAge: "unknown"});
-
     } catch(err) {
       err.context.should.equal("Unparsable maxAge option: 'unknown'")
       done()
