@@ -322,6 +322,16 @@ describe("RedisCache", function () {
     });
   });
 
+  it("should return an error if maxAge values cannot be parsed as numbers", function (done) {
+    try {
+    var target = new RedisCache({ maxAge: "unknown"});
+
+    } catch(err) {
+      err.context.should.equal("Unparsable maxAge option: 'unknown'")
+      done()
+    }
+  });
+
   it("should set the value in redis as json", function (done) {
     var target = new RedisCache();
     target.set("key", { field: "value" }, 1500).then(function () {

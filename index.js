@@ -74,6 +74,10 @@ function RedisCache(options) {
     function() {
       return DEFAULT_RETRY_MS;
     };
+  this.maxAge = Number(options.maxAge)
+  if (options.maxAge && !this.maxAge) {
+    self.emit("error", `Unparsable maxAge option: '${options.maxAge}'`);
+  }
   this.poolResolveTimeMs = options.poolTime;
   this.resolveGetPoolTimer = false;
   this.getPool = [];
