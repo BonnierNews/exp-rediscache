@@ -162,7 +162,7 @@ function RedisCache(options) {
         serialize(value)
       );
     } else if (options && options.maxAge !== undefined) {
-      return this.set(key, value, options.maxAge);
+      return this.set(key, value, Number(options.maxAge));
     } else {
       return this.client.setAsync(key, serialize(value));
     }

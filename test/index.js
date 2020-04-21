@@ -314,6 +314,14 @@ describe("RedisCache", function () {
     });
   });
 
+  it("should set the value in redis with default ttl to the parsed number from config", function (done) {
+    var target = new RedisCache({ maxAge: "1000"});
+    target.set("key", "value").then(function () {
+      target.client.cache.key.ttl.should.equal(1);
+      done();
+    });
+  });
+
   it("should set the value in redis as json", function (done) {
     var target = new RedisCache();
     target.set("key", { field: "value" }, 1500).then(function () {
