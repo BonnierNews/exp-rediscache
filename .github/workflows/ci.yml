@@ -28,5 +28,3 @@ jobs:
 
       - name: Run Tests
         run: npm test
-        env:
-          ELASTICSEARCH_HOST: elasticsearch:9200
