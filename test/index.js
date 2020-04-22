@@ -306,27 +306,35 @@ describe("RedisCache", function () {
     });
   });
 
-  it("should set the value in redis with default ttl if without ttl", function (done) {
+  it("should set the value in redis permanently if maxAge is empty string", function (done) {
+    var target = new RedisCache({ maxAge: ""});
+    target.set("key", "value")
+
+    assert(target.client.cache.key.ttl === null);
+    done()
+  });
+
+  it("should set the value in redis with a ttl if given in options", function (done) {
     var target = new RedisCache({ maxAge: 1000 });
-    target.set("key", "value").then(function () {
-      target.client.cache.key.ttl.should.equal(1);
+    target.set("key", "value", 2000).then(function () {
+      target.client.cache.key.ttl.should.equal(2);
       done();
     });
   });
 
-  it("should set the value in redis with default ttl to the parsed number from config", function (done) {
-    var target = new RedisCache({ maxAge: "1000"});
-    target.set("key", "value").then(function () {
-      target.client.cache.key.ttl.should.equal(1);
-      done();
+    it("should set the value in redis with a ttl if given as a parsable number in a string", function (done) {
+      var target = new RedisCache({ maxAge: "1000"});
+      target.set("key", "value").then(function () {
+        target.client.cache.key.ttl.should.equal(1);
+        done();
+      });
     });
-  });
 
-  it("should return an error if maxAge values cannot be parsed as numbers", function (done) {
+  it("should throw on initialization if maxAge is a unparsable strings", function (done) {
     try {
-    var target = new RedisCache({ maxAge: "unknown"});
-    } catch(err) {
-      err.context.should.equal("Unparsable maxAge option: 'unknown'")
+      new RedisCache({ maxAge: "unknown"});
+    } catch(error) {
+      error.message.should.equal("Unparsable maxAge option: 'unknown'")
       done()
     }
   });

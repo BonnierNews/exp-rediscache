@@ -74,9 +74,8 @@ function RedisCache(options) {
     function() {
       return DEFAULT_RETRY_MS;
     };
-  this.maxAge = Number(options.maxAge)
-  if (options.maxAge && !this.maxAge) {
-    self.emit("error", `Unparsable maxAge option: '${options.maxAge}'`);
+  if (options.maxAge && isNaN(options.maxAge)) {
+    throw new Error(`Unparsable maxAge option: '${options.maxAge}'`);
   }
   this.poolResolveTimeMs = options.poolTime;
   this.resolveGetPoolTimer = false;
@@ -157,6 +156,8 @@ function RedisCache(options) {
   };
   this.set = function(key, value, maxAge) {
     const hasTtl = typeof maxAge === "number";
+    const hasDefaultMaxAge = options && options.maxAge;
+
     if (hasTtl && maxAge <= 0) {
       return Promise.resolve();
     } else if (hasTtl && maxAge > 0) {
@@ -165,7 +166,7 @@ function RedisCache(options) {
         Math.round(maxAge / 1000),
         serialize(value)
       );
-    } else if (options && options.maxAge !== undefined) {
+    } else if (hasDefaultMaxAge) {
       return this.set(key, value, Number(options.maxAge));
     } else {
       return this.client.setAsync(key, serialize(value));
