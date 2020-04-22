@@ -314,18 +314,18 @@ describe("RedisCache", function () {
     done()
   });
 
-  it("should set the value in redis with a specifically given ttl", function (done) {
-    var target = new RedisCache({ maxAge: 1000 });
-    target.set("key", "value", 2000).then(function () {
-      target.client.cache.key.ttl.should.equal(2);
-      done();
-    });
-  });
-
   it("should set the value in redis with a ttl if given in options", function (done) {
     var target = new RedisCache({ maxAge: 1000 });
     target.set("key", "value").then(function () {
       target.client.cache.key.ttl.should.equal(1);
+      done();
+    });
+  });
+
+  it("should set the value in redis with a specifically given ttl that overrides global default values", function (done) {
+    var target = new RedisCache({ maxAge: 1000 });
+    target.set("key", "value", 2000).then(function () {
+      target.client.cache.key.ttl.should.equal(2);
       done();
     });
   });
