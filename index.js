@@ -74,7 +74,9 @@ function RedisCache(options) {
     function() {
       return DEFAULT_RETRY_MS;
     };
-  if (options.maxAge && isNaN(options.maxAge)) {
+  const isNumberRegEx = /^\d+$/;
+
+  if (options.maxAge && options.maxAge !== "number" && !isNumberRegEx.test(options.maxAge)) {
     throw new Error(`Unparsable maxAge option: '${options.maxAge}'`);
   }
   this.poolResolveTimeMs = options.poolTime;
