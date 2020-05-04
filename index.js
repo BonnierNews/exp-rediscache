@@ -74,6 +74,11 @@ function RedisCache(options) {
     function() {
       return DEFAULT_RETRY_MS;
     };
+  const isNumberRegEx = /^\d+$/;
+
+  if (options.maxAge && options.maxAge !== "number" && !isNumberRegEx.test(options.maxAge)) {
+    throw new Error(`Unparsable maxAge option: '${options.maxAge}'`);
+  }
   this.poolResolveTimeMs = options.poolTime;
   this.resolveGetPoolTimer = false;
   this.getPool = [];
@@ -153,6 +158,8 @@ function RedisCache(options) {
   };
   this.set = function(key, value, maxAge) {
     const hasTtl = typeof maxAge === "number";
+    const hasDefaultMaxAge = options && options.maxAge;
+
     if (hasTtl && maxAge <= 0) {
       return Promise.resolve();
     } else if (hasTtl && maxAge > 0) {
@@ -161,8 +168,8 @@ function RedisCache(options) {
         Math.round(maxAge / 1000),
         serialize(value)
       );
-    } else if (options && options.maxAge !== undefined) {
-      return this.set(key, value, options.maxAge);
+    } else if (hasDefaultMaxAge) {
+      return this.set(key, value, Number(options.maxAge));
     } else {
       return this.client.setAsync(key, serialize(value));
     }
