@@ -1,7 +1,7 @@
 {
   "name": "exp-rediscache",
   "description": "A simple redis cache library",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "author": "AB Kvällstidningen Expressen",
   "contributors": [
     "Mattias Nordberg <mattias.nordberg@gmail.com>"
