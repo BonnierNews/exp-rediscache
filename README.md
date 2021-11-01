@@ -46,3 +46,13 @@ var cache = new AsyncCache(new RedisCache({
   prefix: "namespace"
 }));
 ```
+
+## Dev
+
+For local development and running tests:
+
+```bash
+$ npm ci
+$ docker-compose up // starts the local redis instance
+$ npm test
+```
