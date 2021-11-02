@@ -124,18 +124,18 @@ class RedisCache extends EventEmitter {
     const hasDefaultMaxAge = this.options.maxAge;
 
     if (hasTtl && maxAge <= 0) {
-      return Promise.resolve();
-    } else if (hasTtl && maxAge > 0) {
-      return this.client.setex(
-        key,
-        Math.round(maxAge / 1000),
-        serialize(value)
-      );
-    } else if (hasDefaultMaxAge) {
-      return this.set(key, value, Number(this.options.maxAge));
-    } else {
-      return this.client.set(key, serialize(value));
+      return;
     }
+
+    const serialized = serialize(value);
+    const args = [key, serialized];
+    if (hasTtl && maxAge > 0) {
+      args.push("PX", maxAge);
+    } else if (hasDefaultMaxAge) {
+      args.push("PX", Number(this.options.maxAge));
+    }
+
+    return this.client.set(...args);
   }
 
   del(key) {
