@@ -141,7 +141,7 @@ describe("RedisCache", () => {
     await target.set("key", "value", 1500);
 
     const ttl = await client.ttl("key");
-    expect(ttl).to.be.closeTo(2, 0.2);
+    expect(ttl).to.be.within(1, 2);
   });
 
   it("should not set the value in redis if ttl is less than 1", async () => {
