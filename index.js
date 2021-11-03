@@ -64,7 +64,7 @@ class RedisCache extends EventEmitter {
     }
   }
 
-  async addGetToPool(key) {
+  addGetToPool(key) {
     return new Promise((resolve, reject) => {
       const getVO = {
         key,
@@ -110,7 +110,7 @@ class RedisCache extends EventEmitter {
     return deserializeAll(values);
   }
 
-  async peek(key) {
+  peek(key) {
     return this.get(key);
   }
 
@@ -119,7 +119,7 @@ class RedisCache extends EventEmitter {
     return value !== null;
   }
 
-  async set(key, value, maxAge) {
+  set(key, value, maxAge) {
     const hasTtl = typeof maxAge === "number";
     const hasDefaultMaxAge = this.options.maxAge;
 
@@ -138,7 +138,7 @@ class RedisCache extends EventEmitter {
     }
   }
 
-  async del(key) {
+  del(key) {
     return this.client.del(key);
   }
 
