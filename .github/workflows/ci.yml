@@ -30,7 +30,7 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run Tests
         run: npm test
