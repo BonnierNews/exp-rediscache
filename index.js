@@ -39,7 +39,29 @@ class RedisCache extends EventEmitter {
   constructor(options = {}) {
     super(options);
 
+    /* eslint-disable no-console */
+    if (typeof options.retry_strategy !== "undefined") {
+      console.warn("retry_strategy is deprecated, please use retryStrategy instead.");
+      options.retryStrategy = options.retry_strategy;
+    }
     options.retryStrategy = options.retryStrategy || (() => DEFAULT_RETRY_MS);
+
+    if (typeof options.prefix !== "undefined") {
+      console.warn("prefix is deprecated, please use keyPrefix instead.");
+      options.keyPrefix = options.prefix;
+    }
+
+    if (typeof options.no_ready_check !== "undefined") {
+      console.warn("no_ready_check is deprecated, please use enableReadyCheck instead.");
+      options.enableReadyCheck = !options.no_ready_check;
+    }
+
+    if (typeof options.enable_offline_queue !== "undefined") {
+      console.warn("enable_offline_queue is deprecated, please use enableOfflineQueue instead.");
+      options.enableOfflineQueue = options.enable_offline_queue;
+    }
+    /* eslint-enable */
+
     this.options = options;
     const isNumberRegEx = /^\d+$/;
 
