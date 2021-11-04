@@ -39,7 +39,7 @@ const cache = new AsyncCache(new RedisCache({
 }));
 ```
 
-To namespace your cache keys (in case you run multiple apps against the same Redis), you can specify the `prefix` option.
+To namespace your cache keys (in case you run multiple apps against the same Redis), you can specify the `keyPrefix` option.
 
 ```javascript
 const cache = new AsyncCache(new RedisCache({
