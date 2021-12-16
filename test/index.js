@@ -60,13 +60,19 @@ describe("RedisCache", () => {
     expect(value).to.equal("undefined");
   });
 
-  it("should emit client errors", async () => {
+  it("should emit client errors", (done) => {
     const target = new RedisCache();
     target.on("error", (err) => {
       expect(err).to.be.instanceOf(Error);
       expect(err.message).to.equal("error");
+      done();
     });
     target.client.emit("error", new Error("error"));
+  });
+
+  it("should emit client connection", (done) => {
+    const target = new RedisCache();
+    target.on("connect", done);
   });
 
   it("should delete the key from redis", async () => {
