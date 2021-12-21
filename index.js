@@ -72,8 +72,13 @@ class RedisCache extends EventEmitter {
     this.resolveGetPoolTimer = false;
     this.getPool = [];
     this.client = new Redis(options);
+
     this.client.on("error", (err) => {
       this.emit("error", err);
+    });
+
+    this.client.on("connect", () => {
+      this.emit("connect");
     });
   }
 
