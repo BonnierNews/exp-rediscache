@@ -17,7 +17,7 @@ hit.then((value) => {
 });
 ```
 
-Values cached with a maxAge uses Redis's SETEX command and sets a TTL on the key.
+Values cached with a maxAge uses Redis's SET PX command and sets a TTL on the key.
 
 ```javascript
 const cache = new AsyncCache(new RedisCache());
