@@ -96,7 +96,7 @@ class RedisCache extends EventEmitter {
       const getVO = {
         key,
         resolve,
-        reject
+        reject,
       };
       this.getPool.push(getVO);
       if (!this.resolveGetPoolTimer) {
@@ -155,7 +155,7 @@ class RedisCache extends EventEmitter {
     }
 
     const serialized = serialize(value);
-    const args = [key, serialized];
+    const args = [ key, serialized ];
     if (hasTtl && maxAge > 0) {
       args.push("PX", maxAge);
     } else if (hasDefaultMaxAge) {

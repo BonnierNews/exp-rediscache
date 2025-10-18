@@ -16,8 +16,8 @@ chai.config.includeStack = true;
 global.expect = chai.expect;
 
 module.exports = {
-  "recursive": true,
-  "reporter": "spec",
-  "timeout": 5000,
-  "exit": true
+  recursive: true,
+  reporter: "spec",
+  timeout: 5000,
+  exit: true,
 };
