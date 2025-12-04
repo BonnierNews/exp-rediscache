@@ -5,7 +5,7 @@ const Redis = require("ioredis");
 
 describe("RedisCache", () => {
   let client;
-  before(async () => {
+  before(() => {
     client = new Redis();
   });
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("RedisCache", () => {
     const options = {
       host: "127.0.0.1",
       port: 6379,
-      retryStrategy: () => {}
+      retryStrategy: () => {},
     };
     const target = new RedisCache(options);
     expect(target.client.options).to.include(options);
@@ -28,7 +28,7 @@ describe("RedisCache", () => {
   it("should add retryStategy option if none specified", () => {
     const options = {
       host: "127.0.0.1",
-      port: 6379
+      port: 6379,
     };
     const target = new RedisCache(options);
     expect(target.client.options).to.have.property("retryStrategy");
@@ -167,7 +167,7 @@ describe("RedisCache", () => {
   });
 
   it("should set the value in redis permanently if maxAge is empty string", async () => {
-    const target = new RedisCache({maxAge: ""});
+    const target = new RedisCache({ maxAge: "" });
     await target.set("key", "value");
 
     const ttl = await client.ttl("key");
@@ -175,7 +175,7 @@ describe("RedisCache", () => {
   });
 
   it("should set the value in redis with a ttl if given in constructor options", async () => {
-    const target = new RedisCache({maxAge: 1000});
+    const target = new RedisCache({ maxAge: 1000 });
     await target.set("key", "value");
 
     const ttl = await client.ttl("key");
@@ -183,7 +183,7 @@ describe("RedisCache", () => {
   });
 
   it("should set the value in redis with a specifically given ttl that overrides global default values", async () => {
-    const target = new RedisCache({maxAge: 1000});
+    const target = new RedisCache({ maxAge: 1000 });
     await target.set("key", "value", 2000);
 
     const ttl = await client.ttl("key");
@@ -191,7 +191,7 @@ describe("RedisCache", () => {
   });
 
   it("should set the value in redis with a ttl if given as a parsable number in a string", async () => {
-    const target = new RedisCache({maxAge: "1000"});
+    const target = new RedisCache({ maxAge: "1000" });
     await target.set("key", "value");
 
     const ttl = await client.ttl("key");
@@ -199,17 +199,17 @@ describe("RedisCache", () => {
   });
 
   it("should set the value in redis without a ttl if default options was given as an empty string", async () => {
-    const target = new RedisCache({maxAge: ""});
+    const target = new RedisCache({ maxAge: "" });
     await target.set("key", "value");
 
     const ttl = await client.ttl("key");
     expect(ttl).to.equal(-1);
   });
 
-  ["unknown", "Infinity", "-Infinity", " ", {}, [], Infinity, Math.random].map((input) => {
-    it(`should throw on initialization if maxAge is '${input}'`, async () => {
+  [ "unknown", "Infinity", "-Infinity", " ", {}, [], Infinity, Math.random ].map((input) => {
+    it(`should throw on initialization if maxAge is '${input}'`, () => {
       try {
-        return new RedisCache({maxAge: input});
+        return new RedisCache({ maxAge: input });
       } catch (error) {
         expect(error.message).to.equal(`Unparsable maxAge option: '${input}'`);
       }
