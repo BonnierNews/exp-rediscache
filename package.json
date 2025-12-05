@@ -1,3 +1,4 @@
+
 {
   "name": "exp-rediscache",
   "description": "A simple redis cache library",
@@ -18,12 +19,12 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ioredis": "^4.28.0"
+    "ioredis": "^5.4.1"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "eslint": "^8.1.0",
-    "mocha": "^9.1.3"
+    "chai": "^5.1.2",
+    "eslint": "^9.16.0",
+    "mocha": "^11.0.1"
   },
   "files": [
     "index.js",

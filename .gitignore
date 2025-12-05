@@ -2,4 +2,3 @@
 /.idea
 /*.tgz
 .eslintcache
-package-lock.json
